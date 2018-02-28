@@ -5,7 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.IO;
+using System.Media;
+using System.Net.Http.Headers;
 using System.Windows.Forms;
+using System.Media.SoundPlayer;
 
 namespace MovieQuiz.Controller
 {
@@ -20,13 +23,14 @@ namespace MovieQuiz.Controller
         private bool timerStarted = false;
         private string teamName;
         private Quiz quiz;
-        private WMPLib.WindowsMediaPlayer player;
+        private SoundPlayer player;
+        private string url;
 
         public MainController(string jsonFile)
         {
             this.jsonFile = jsonFile;
-            player = new WMPLib.WindowsMediaPlayer();
-            player.PlayStateChange += OnPlayerStateChange;
+            //player = new SoundPlayer();         -> move to OnPlaySoundFile() ?
+            //player.PlayStateChange += OnPlayerStateChange;
         }
 
         internal void setView(Views.MainMenu view)
@@ -102,8 +106,8 @@ namespace MovieQuiz.Controller
         {
             try
             {
-                player.URL = Path.Combine(config.SoundDirectory, quiz.SoundFile);
-                player.controls.play();
+                url = Path.Combine(config.SoundDirectory, quiz.SoundFile);
+                player.Play(url);
             }
             catch (Exception ex)
             {
@@ -115,7 +119,8 @@ namespace MovieQuiz.Controller
 
         public void OnPlayerStateChange(int NewState)
         {
-            if ((WMPLib.WMPPlayState)NewState == WMPLib.WMPPlayState.wmppsStopped)
+            //there is no event for the end of playback in SoundPlayer class!
+            if ((WMPLib.WMPPlayState)NewState == WMPLib.WMPPlayState.wmppsStopped) 
             {
                 // playback ended
                 if (!timerStarted)
@@ -147,7 +152,7 @@ namespace MovieQuiz.Controller
 
         public void OnAnswer(string answer)
         {
-            player.controls.stop();
+            player.Stop();
             timer.Stop();
 
             if (quiz.IsCorrectAnswer(answer))
