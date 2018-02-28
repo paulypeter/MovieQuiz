@@ -8,7 +8,6 @@ using System.IO;
 using System.Media;
 using System.Net.Http.Headers;
 using System.Windows.Forms;
-using System.Media.SoundPlayer;
 
 namespace MovieQuiz.Controller
 {
@@ -29,7 +28,6 @@ namespace MovieQuiz.Controller
         public MainController(string jsonFile)
         {
             this.jsonFile = jsonFile;
-            //player = new SoundPlayer();         -> move to OnPlaySoundFile() ?
             //player.PlayStateChange += OnPlayerStateChange;
         }
 
@@ -107,7 +105,9 @@ namespace MovieQuiz.Controller
             try
             {
                 url = Path.Combine(config.SoundDirectory, quiz.SoundFile);
-                player.Play(url);
+                
+                player = new SoundPlayer(url);
+                player.Play();
             }
             catch (Exception ex)
             {
