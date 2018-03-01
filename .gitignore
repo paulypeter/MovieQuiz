@@ -246,3 +246,6 @@ ModelManifest.xml
 
 # Rider IDE files
 .idea/
+
+# VSCode files
+.vscode/
